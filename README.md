@@ -1,6 +1,5 @@
 # (EN) Image Cryptography Project
 
-
 ## User Interfaces
 
 This project features two distinct Graphical User Interfaces (GUIs) to suit different needs and hardware capabilities:
@@ -17,13 +16,13 @@ This application splits image encryption into two fundamental categories: **Visu
 ### 1. Visual Encryption (Pixel-Level)
 Visual encryption manipulates only the RGB (Red, Green, Blue) data of the image. The file headers remain intact, meaning the output is still a valid image file that can be opened in any standard viewer. The goal is to scramble the visual data mathematically.
 
-#### The Repeating Key Vulnerability (Classic Vigenère)
-The **Vulnerability Demo** tab implements a pixel-adapted version of the classic Vigenère cipher. 
+#### Classic Vigenère (Visual Stream)
+The **Visual Stream (Vigenere)** tab implements a pixel-adapted version of the classic Vigenère cipher. 
 - **The Math:** For every pixel, the algorithm extracts the RGB values (0-255). It takes the user's password, maps each character to its byte value, and adds that value to the pixel's color channels: `C = (P + K) mod 256` (where `C` is ciphertext, `P` is plaintext pixel, and `K` is the key character).
 - **The Vulnerability:** Because the password is short (e.g., "SECRET"), it repeats infinitely across the millions of pixels. If an image has a large area of uniform color (like a blue sky), the exact same mathematical shift is applied repeatedly. This predictable pattern allows the human eye (and cryptanalysts) to easily see the original outlines, gradients, and shapes of the image. This perfectly visualizes why repeating-key ciphers and modern algorithms running in ECB (Electronic Codebook) mode are fundamentally insecure for pattern-heavy data.
 
-#### The Secure Visual Stream (XOR + PRNG)
-To fix the repeating key vulnerability, the **Visual Stream** tab implements a Pseudo-Random Stream Cipher using the ultimate cryptographic operator: **XOR (`^`)**.
+#### Secure Visual Stream (XOR + PRNG)
+To fix the repeating key vulnerability, the **Visual Stream (XOR)** tab implements a Pseudo-Random Stream Cipher using the ultimate cryptographic operator: **XOR (`^`)**.
 - **The Math:** Instead of repeating the password, the password is put through a **SHA-256** hash function to create a mathematically secure 32-byte seed. This seed is fed into a Pseudo-Random Number Generator (PRNG). 
 - **The Execution:** The PRNG generates an infinitely long, completely unpredictable stream of numbers (0-255). Every single RGB channel of every pixel is XORed against a unique random number. 
 - **Why it works:** Because the stream never repeats its pattern, the output is pure, uniform, high-frequency static. No outlines or shapes survive. Furthermore, the XOR operation is perfectly symmetrical: `(A ^ B) ^ B = A`. If the receiver enters the exact same password, the exact same PRNG stream is generated, and XORing the static with the stream perfectly restores the original photo.
@@ -51,12 +50,15 @@ To run the modern interface:
 ```bash
 python UI_Modern.py
 ```
+To run the lightweight interface:
+```bash
+python UI_Lite.py
+```
 
 ---
 ---
 
 # (RO) Criptarea imaginilor
-
 
 ## Interfete Utilizator
 
@@ -74,13 +76,13 @@ Aceasta aplicatie imparte criptarea imaginilor in doua categorii fundamentale: *
 ### 1. Criptare Vizuala (Nivel de Pixel)
 Criptarea vizuala manipuleaza doar datele RGB (Rosu, Verde, Albastru) ale imaginii. Headerele fisierului raman intacte, ceea ce inseamna ca rezultatul este in continuare un fisier imagine valid care poate fi deschis in orice vizualizator standard. Scopul este de a amesteca datele vizuale in mod matematic.
 
-#### Vulnerabilitatea Cheii Repetitive (Vigenere Clasic)
-Tab-ul **Demo Vulnerabilitate** implementeaza o versiune adaptata pentru pixeli a cifrului clasic Vigenere.
+#### Vigenere Clasic (Flux Vizual)
+Tab-ul **Flux Vizual (Vigenere)** implementeaza o versiune adaptata pentru pixeli a cifrului clasic Vigenere.
 - **Matematica:** Pentru fiecare pixel, algoritmul extrage valorile RGB (0-255). Preia parola utilizatorului, mapeaza fiecare caracter la valoarea sa in octeti si aduna acea valoare la canalele de culoare ale pixelului: `C = (P + K) mod 256` (unde `C` este ciphertext, `P` este pixelul plaintext, iar `K` este caracterul cheii).
 - **Vulnerabilitatea:** Deoarece parola este scurta (de exemplu, "SECRET"), aceasta se repeta la infinit peste milioanele de pixeli. Daca o imagine are o zona mare de culoare uniforma (cum ar fi un cer albastru), aceeasi deplasare matematica este aplicata in mod repetat. Acest sablon (pattern) predictibil permite ochiului uman (si criptanalistilor) sa vada cu usurinta contururile, gradientii si formele originale ale imaginii. Acest lucru vizualizeaza perfect de ce cifrurile cu cheie repetitiva si algoritmii moderni care ruleaza in modul ECB (Electronic Codebook) sunt fundamental nesigure pentru date cu sabloane repetitive.
 
-#### Fluxul Vizual Securizat (Stream Cipher cu XOR + PRNG)
-Pentru a repara vulnerabilitatea cheii repetitive, tab-ul **Flux Vizual** implementeaza un Cifru de Flux Pseudo-Aleator folosind operatorul criptografic suprem: **XOR (`^`)**.
+#### Flux Vizual Securizat (Stream Cipher cu XOR + PRNG)
+Tab-ul **Flux Vizual (XOR)** implementeaza un Cifru de Flux Pseudo-Aleator (Pseudo-Random Stream Cipher) folosind operatorul criptografic suprem: **XOR (`^`)**.
 - **Matematica:** In loc sa repete parola, parola este trecuta printr-o functie hash **SHA-256** pentru a crea un seed matematic sigur de 32 de octeti. Acest seed este introdus intr-un Generator de Numere Pseudo-Aleatoare (PRNG).
 - **Executia:** PRNG genereaza un flux infinit si complet imprevizibil de numere (0-255). Fiecare canal RGB al fiecarui pixel este aplicat prin operatia XOR impotriva unui numar aleatoriu unic.
 - **De ce functioneaza:** Deoarece fluxul nu isi repeta niciodata sablonul, rezultatul este zgomot static (static noise) pur, uniform, de inalta frecventa. Nu supravietuiesc contururi sau forme. Mai mult, operatia XOR este perfect simetrica: `(A ^ B) ^ B = A`. Daca receptorul introduce exact aceeasi parola, este generat exact acelasi flux PRNG, iar aplicarea XOR asupra staticului cu fluxul restaureaza perfect fotografia originala.
@@ -100,11 +102,15 @@ Tab-ul **Mod Securizat** abandoneaza complet manipularea pixelilor. In schimb, t
 ---
 
 ## Cerinte Preliminare si Executie
-Asigura-te ca ai instalate librariile necesare inainte de a rula aplicatiile:
+Asigurati-va ca aveti instalate librariile necesare inainte de a rula aplicatiile:
 ```bash
 pip install pycryptodome Pillow PyQt6
 ```
-Pentru a rula interfata moderna:
+Pentru a rula interfata moderna (modern interface):
 ```bash
 python UI_Modern.py
+```
+Pentru a rula interfata usoara (lightweight interface):
+```bash
+python UI_Lite.py
 ```
